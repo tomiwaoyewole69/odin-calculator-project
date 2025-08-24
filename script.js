@@ -2,6 +2,7 @@ let resultDisplay = document.querySelector('.input')
 const digitButtons = document.querySelectorAll('.digit')
 const operatorButtons = document.querySelectorAll('.operator')
 const calculateButton = document.querySelector('.calculate')
+const clearButton = document.querySelector('.clear')
 
 function add(num1, num2) {
   return num1 + num2;
@@ -61,8 +62,17 @@ operatorButtons.forEach(operators => {
 calculateButton.addEventListener('click', () => {
   if (firstNum !== '') {
     secondNum = Number(resultDisplay.value)
-    const calculate = operate(operator, firstNum, secondNum)
-    resultDisplay.value = calculate
-    clearAll()
+    if (operator == '/' && secondNum == 0) {
+      resultDisplay.value = 'Error'
+    } else {
+      const calculate = operate(operator, firstNum, secondNum)
+      resultDisplay.value = calculate
+      clearAll()
+    }
   }
+})
+
+clearButton.addEventListener('click', () => {
+  resultDisplay.value = ''
+  clearAll()
 })
