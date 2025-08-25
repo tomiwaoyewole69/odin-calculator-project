@@ -1,8 +1,10 @@
 let resultDisplay = document.querySelector('.input')
-const digitButtons = document.querySelectorAll('.digit')
-const operatorButtons = document.querySelectorAll('.operator')
-const calculateButton = document.querySelector('.calculate')
-const clearButton = document.querySelector('.clear')
+const buttons = document.querySelectorAll('button')
+
+const operators = ["+", "-", "*", "/"]
+let firstNum = '';
+let operator = '';
+let secondNum = '';
 
 function add(num1, num2) {
   return num1 + num2;
@@ -17,15 +19,6 @@ function divide(num1, num2) {
   return num1 / num2;
 }
 
-let firstNum = 0;
-let operator = ''
-let secondNum = 0;
-
-function clearAll() {
-  firstNum = 0
-  operator = ''
-  secondNum = 0
-}
 function operate(operator, num1, num2) {
   switch (operator) {
     case '+':
@@ -41,38 +34,48 @@ function operate(operator, num1, num2) {
   }
 }
 
-digitButtons.forEach(digit => {
-  digit.addEventListener('click', () => {
-    if (resultDisplay.value == '0') {
-      resultDisplay.value = digit.textContent
-    } else {
-      resultDisplay.value += digit.textContent
-    }
-  })
-})
+function clearAll() {
+  firstNum = ''
+  operator = ''
+  secondNum = ''
+}
 
-operatorButtons.forEach(operators => {
-  operators.addEventListener('click', () => {
-    operator = operators.textContent
-    firstNum = Number(resultDisplay.value)
-    resultDisplay.value = ''
-  })
-})
-
-calculateButton.addEventListener('click', () => {
-  if (firstNum !== '') {
-    secondNum = Number(resultDisplay.value)
-    if (operator == '/' && secondNum == 0) {
-      resultDisplay.value = 'Error'
-    } else {
-      const calculate = operate(operator, firstNum, secondNum)
-      resultDisplay.value = calculate
-      clearAll()
-    }
-  }
-})
-
-clearButton.addEventListener('click', () => {
-  resultDisplay.value = ''
+function calculateResult() {
+  secondNum = Number(resultDisplay.value)
+  const calculate = operate(operator, firstNum, secondNum)
+  resultDisplay.value = calculate
   clearAll()
+}
+
+buttons.forEach(button => {
+  button.addEventListener('click', () => {
+    const value = button.value
+    if (operators.includes(value)) {
+      if (resultDisplay.value) {
+        operator = value
+        firstNum = Number(resultDisplay.value)
+        resultDisplay.value = ''
+      }
+    }
+    else if (value == '=') {
+      if (resultDisplay.value == '' || operator == '/' && secondNum == 0) {
+        resultDisplay.value = 'Error'
+      }
+      else if (firstNum !== '' && operator !== '') {
+        calculateResult()
+      }
+    }
+    else if (value == 'C') {
+     resultDisplay.value = ''
+     clearAll() 
+    }
+    else {
+      if (resultDisplay.value == '0') {
+        resultDisplay.value = value;
+      }
+      else {
+        resultDisplay.value += value;
+      }
+    }
+  })
 })
