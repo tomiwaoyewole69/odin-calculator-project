@@ -41,79 +41,71 @@ function clearAll() {
 }
 // function to evaluate the expression
 function calculateResult() {
-  secondNum = Number(resultDisplay.value);
-  const calculate = operate(operator, firstNum, secondNum);
-  resultDisplay.value = calculate;
-  clearAll();
+  // evaluate the equation
+  if (resultDisplay.value == "" || (operator == "/" && secondNum == 0)) {
+    resultDisplay.value = "Error";
+  } else if (firstNum !== "" && operator !== "") {
+    secondNum = Number(resultDisplay.value);
+    const calculate = operate(operator, firstNum, secondNum);
+    resultDisplay.value = calculate;
+    clearAll();
+  }
+}
+
+// function to perform operation for both the button and keyboard input
+function performOperation(value) {
+  // check if the value is in the operator array on button click
+  if (operators.includes(value)) {
+    if (value == "=") {
+      calculateResult();
+    } else if (value == "C") {
+      // clear the display value
+      resultDisplay.value = "";
+      clearAll();
+    } else if (value == "DEL") {
+      // delete each value
+      resultDisplay.value = resultDisplay.value.slice(0, -1);
+    } else if (value == "%") {
+      resultDisplay.value = Number(resultDisplay.value) / 100;
+    } else {
+      if (resultDisplay.value) {
+        // add the operator on button click to the variable and save the display value to the variable
+        operator = value;
+        firstNum = Number(resultDisplay.value);
+        resultDisplay.value = "";
+      }
+    }
+  } else {
+    // to add digit to the display
+    if (value == ".") {
+      if (resultDisplay.value !== "" && !resultDisplay.value.includes(value)) {
+        resultDisplay.value += value;
+      }
+    } else if (resultDisplay.value == "0") {
+      resultDisplay.value = value;
+    } else {
+      resultDisplay.value += value;
+    }
+  }
 }
 
 buttons.forEach((button) => {
   button.addEventListener("click", () => {
     const value = button.value;
-    // check if the value is in the operator array on button click
-    if (operators.includes(value)) {
-      if (value == "=") {
-        // evaluate the equation
-        if (resultDisplay.value == "" || (operator == "/" && secondNum == 0)) {
-          resultDisplay.value = "Error";
-        } else if (firstNum !== "" && operator !== "") {
-          calculateResult();
-        }
-      } else if (value == "C") {
-        // clear the display value
-        resultDisplay.value = "";
-        clearAll();
-      } else if (value == "DEL") {
-        // delete each value
-        resultDisplay.value = resultDisplay.value.slice(0, -1);
-      } else if (value == "%") {
-        resultDisplay.value = Number(resultDisplay.value) / 100;
-      } else {
-        if (resultDisplay.value) {
-          // add the operator on button click to the variable and save the display value to the variable
-          operator = value;
-          firstNum = Number(resultDisplay.value);
-          resultDisplay.value = "";
-        }
-      }
-    } else {
-      // to add digit to the display
-      if (value == ".") {
-        if (
-          resultDisplay.value !== "" &&
-          !resultDisplay.value.includes(value)
-        ) {
-          resultDisplay.value += value;
-        }
-      } else if (resultDisplay.value == "0") {
-        resultDisplay.value = value;
-      } else {
-        resultDisplay.value += value;
-      }
-    }
+    performOperation(value);
   });
 });
 
 window.addEventListener("keyup", (e) => {
   if (e.key == "Backspace") {
     resultDisplay.value = resultDisplay.value.slice(0, -1);
+  } else if (e.key == "Enter") {
+    calculateResult();
+  } else {
+    const numberInputs = document.querySelectorAll(`button[value="${e.key}"]`);
+    numberInputs.forEach((numbers) => {
+      const value = numbers.value;
+      performOperation(value);
+    });
   }
-  const buttons = document.querySelectorAll(`button[value="${e.key}"`);
-  buttons.forEach((button) => {
-    if (button.classList.contains("digit")) {
-      const value = button.value;
-      if (value == ".") {
-        if (
-          resultDisplay.value !== "" &&
-          !resultDisplay.value.includes(value)
-        ) {
-          resultDisplay.value += value;
-        }
-      } else if (resultDisplay.value == "0") {
-        resultDisplay.value = value;
-      } else {
-        resultDisplay.value += value;
-      }
-    }
-  });
 });
